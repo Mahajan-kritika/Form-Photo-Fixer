@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f6f8fc">
+  <meta name="description" content="Crop, resize and compress application photos and signatures locally in your browser.">
+  <title>Form Photo Fixer — Smart Photo &amp; Signature Resizer</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#" aria-label="Form Photo Fixer home">
+      <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 32 32"><rect x="3" y="3" width="26" height="26" rx="8" fill="currentColor"/><circle cx="16" cy="12" r="4" fill="white"/><path d="M8.5 24c1.2-4 3.8-6 7.5-6s6.3 2 7.5 6" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round"/></svg></span>
+      <span>FORM PHOTO <strong>FIXER</strong></span>
+    </a>
+    <nav class="nav-links" aria-label="Main navigation">
+      <a class="active" href="#workspace">Home</a>
+      <a href="#presets">Custom Presets</a>
+      <a href="#about">About</a>
+    </nav>
+    <span class="privacy-pill"><span></span> 100% private · runs locally</span>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="eyebrow"><span class="eyebrow-line"></span> APPLICATION-READY, IN MINUTES</div>
+      <h1>Your Photo. <span>Perfectly Formatted.</span></h1>
+      <p>Resize, crop and compress your photo and signature for exam and job application forms — all in one place.</p>
+      <div class="steps" aria-label="Four step process">
+        <div class="step active"><span>1</span> Upload</div><i></i><div class="step active"><span>2</span> Crop</div><i></i><div class="step"><span>3</span> Compress</div><i></i><div class="step"><span>4</span> Download</div>
+      </div>
+    </section>
+
+    <section class="workspace" id="workspace">
+      <aside class="panel setup-panel">
+        <div class="panel-heading"><div><span class="section-kicker">STEP 01</span><h2>Set up your files</h2></div><span class="heading-icon">01</span></div>
+        <label class="field-label" for="presetSelect">Application preset</label>
+        <div class="select-wrap"><select id="presetSelect" aria-label="Application preset"></select><span aria-hidden="true">⌄</span></div>
+        <p class="helper-text" id="presetDescription">Sample requirements — confirm the exact specifications in your application notice.</p>
+
+        <div class="upload-block">
+          <div class="upload-label"><span>Passport-size photograph</span><span class="optional-tag">PHOTO</span></div>
+          <label class="dropzone" id="photoDrop" for="photoInput" tabindex="0">
+            <input id="photoInput" type="file" accept="image/jpeg,image/png,.jpg,.jpeg,.png">
+            <span class="upload-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4m0 0L7 9m5-5 5 5M4 15v4a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-4" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            <span class="drop-title">Drop your photo here</span><span class="drop-subtitle">or <u>browse files</u></span><span class="file-hint">JPG or PNG · up to 20 MB</span>
+          </label>
+          <div class="file-card hidden" id="photoFileCard"></div>
+        </div>
+
+        <div class="upload-block">
+          <div class="upload-label"><span>Candidate signature</span><span class="optional-tag">SIGNATURE</span></div>
+          <label class="dropzone compact" id="signatureDrop" for="signatureInput" tabindex="0">
+            <input id="signatureInput" type="file" accept="image/jpeg,image/png,.jpg,.jpeg,.png">
+            <span class="upload-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 17.5 15.8 5.7a2.1 2.1 0 0 1 3 3L7 20.5l-4 .8 1-3.8ZM13.5 8l3 3" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            <span class="drop-title">Drop your signature here</span><span class="drop-subtitle">or <u>browse files</u></span><span class="file-hint">JPG or PNG · up to 20 MB</span>
+          </label>
+          <div class="file-card hidden" id="signatureFileCard"></div>
+        </div>
+        <div class="privacy-note"><span class="lock-icon">⌑</span><span><strong>Your files never leave this device.</strong><br>All processing happens privately in your browser.</span></div>
+      </aside>
+
+      <section class="panel editor-panel">
+        <div class="panel-heading"><div><span class="section-kicker">STEP 02</span><h2>Crop &amp; position</h2></div><button class="text-button" id="resetCrop" type="button" disabled><span aria-hidden="true">↻</span> Reset crop</button></div>
+        <div class="cropper-wrap" id="cropperWrap">
+          <div class="crop-placeholder" id="cropPlaceholder">
+            <div class="placeholder-art"><svg viewBox="0 0 72 72" aria-hidden="true"><rect x="9" y="12" width="54" height="48" rx="8" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="28" cy="29" r="7" fill="none" stroke="currentColor" stroke-width="2"/><path d="m13 52 15-14 10 10 7-7 14 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <strong>Your photo preview will appear here</strong><span>Upload a photo to get started</span>
+          </div>
+          <canvas id="cropCanvas" class="hidden" aria-label="Draggable photo crop preview"></canvas>
+          <div class="crop-guide hidden" id="cropGuide" aria-hidden="true"><span class="face-oval"></span><span class="guide-label">FACE POSITIONING GUIDE</span></div>
+          <div class="crop-hint hidden" id="cropHint"><span>✥</span> Drag to reposition</div>
+        </div>
+        <div class="editor-controls">
+          <label class="zoom-label" for="zoomControl">Zoom</label>
+          <button class="icon-button" id="zoomOut" aria-label="Zoom out" type="button" disabled>−</button>
+          <input type="range" id="zoomControl" min="1" max="3" step="0.01" value="1" aria-label="Photo zoom" disabled>
+          <button class="icon-button" id="zoomIn" aria-label="Zoom in" type="button" disabled>+</button>
+          <span class="zoom-value" id="zoomValue">1.0×</span>
+        </div>
+        <div class="editor-divider"></div>
+        <div class="signature-preview-heading"><div><strong>Signature preview</strong><span>Fit to your selected requirements</span></div><span class="signature-badge">LIVE</span></div>
+        <div class="signature-preview" id="signaturePreview"><div id="signaturePreviewEmpty"><span class="signature-placeholder-icon">✎</span><span>Your signature will appear here</span></div><img id="signaturePreviewImage" class="hidden" alt="Signature preview"></div>
+        <div class="dpi-row"><label for="dpiInput">Output resolution</label><div class="dpi-control"><input id="dpiInput" type="number" min="30" max="1200" value="300" aria-label="Output resolution in DPI"><span>DPI</span></div><span class="dpi-note">300 DPI is recommended</span></div>
+      </section>
+
+      <aside class="panel output-panel">
+        <div class="panel-heading"><div><span class="section-kicker">STEP 03 &amp; 04</span><h2>Output &amp; download</h2></div><span class="heading-icon output-heading-icon">↗</span></div>
+        <div class="output-card" id="photoOutput">
+          <div class="output-title-row"><div class="output-file-icon photo-icon">▣</div><div><h3>Photograph</h3><span class="output-subtitle"><span id="photoOrientation">Portrait</span> · <span id="photoPresetSize">3.5 × 4.5 cm</span></span></div></div>
+          <div class="spec-row"><span>Output dimensions</span><strong id="photoDimensions">— × — px</strong></div>
+          <div class="spec-row"><span>Maximum file size</span><strong id="photoMax">50 KB</strong></div>
+          <div class="size-track"><span id="photoSizeFill"></span></div>
+          <div class="size-label-row"><span id="photoSizeLabel">No file processed</span><span id="photoStatus" class="status-text">Waiting</span></div>
+          <button class="button button-secondary full-button process-button" id="processPhoto" type="button" disabled><span>⟳</span> Compress &amp; validate photo</button>
+          <button class="button button-primary full-button download-output-button" id="downloadPhoto" type="button" disabled><span>↓</span> Download Photo</button>
+          <div class="validation-detail hidden" id="photoValidation"></div>
+        </div>
+        <div class="output-card" id="signatureOutput">
+          <div class="output-title-row"><div class="output-file-icon signature-icon">✎</div><div><h3>Signature</h3><span class="output-subtitle"><span id="signatureOrientation">Landscape</span> · <span id="signaturePresetSize">3.5 × 1.5 cm</span></span></div></div>
+          <div class="spec-row"><span>Output dimensions</span><strong id="signatureDimensions">— × — px</strong></div>
+          <div class="spec-row"><span>Maximum file size</span><strong id="signatureMax">20 KB</strong></div>
+          <div class="size-track"><span id="signatureSizeFill"></span></div>
+          <div class="size-label-row"><span id="signatureSizeLabel">No file processed</span><span id="signatureStatus" class="status-text">Waiting</span></div>
+          <button class="button button-secondary full-button process-button" id="processSignature" type="button" disabled><span>⟳</span> Compress &amp; validate signature</button>
+          <button class="button button-primary full-button download-output-button" id="downloadSignature" type="button" disabled><span>↓</span> Download Signature</button>
+          <div class="validation-detail hidden" id="signatureValidation"></div>
+        </div>
+        <button class="button button-all full-button" id="downloadAll" type="button" disabled><span>↓</span> Download All Files <small>2 FILES</small></button>
+        <p class="download-note">Downloads are created on your device. Each file is checked against the selected requirements.</p>
+      </aside>
+    </section>
+
+    <section class="preset-section" id="presets">
+      <div class="preset-section-heading"><div><span class="section-kicker">MAKE IT YOURS</span><h2>Your application, your specs.</h2><p>Create and save your own reusable requirements — right in this browser.</p></div><button class="button button-outline" id="addPresetButton" type="button"><span>＋</span> Create custom preset</button></div>
+      <div class="preset-editor hidden" id="presetEditor">
+        <div class="preset-editor-heading"><div><h3 id="presetEditorTitle">Create a custom preset</h3><p>All dimensions are converted using your selected DPI.</p></div><button class="icon-button close-editor" id="closePresetEditor" type="button" aria-label="Close">×</button></div>
+        <form id="presetForm">
+          <input id="editingPresetId" type="hidden">
+          <label class="custom-field custom-name">Preset name<input id="customName" type="text" maxlength="40" placeholder="e.g. University Entrance Form" required></label>
+          <div class="custom-group"><strong>Photograph requirements</strong><div class="custom-grid"><label class="custom-field">Width (cm)<input id="customPhotoWidth" type="number" min="0.1" max="30" step="0.1" value="3.5" required></label><label class="custom-field">Height (cm)<input id="customPhotoHeight" type="number" min="0.1" max="30" step="0.1" value="4.5" required></label><label class="custom-field">Max file size (KB)<input id="customPhotoMax" type="number" min="1" max="10000" value="50" required></label></div></div>
+          <div class="custom-group"><strong>Signature requirements</strong><div class="custom-grid"><label class="custom-field">Width (cm)<input id="customSignatureWidth" type="number" min="0.1" max="30" step="0.1" value="3.5" required></label><label class="custom-field">Height (cm)<input id="customSignatureHeight" type="number" min="0.1" max="30" step="0.1" value="1.5" required></label><label class="custom-field">Max file size (KB)<input id="customSignatureMax" type="number" min="1" max="10000" value="20" required></label></div></div>
+          <div class="custom-form-bottom"><label class="custom-field">Output format<select id="customFormat"><option value="image/jpeg">JPEG</option><option value="image/png">PNG</option></select></label><div class="form-actions"><button class="button button-text" id="cancelPreset" type="button">Cancel</button><button class="button button-primary" type="submit">Save preset</button></div></div>
+        </form>
+      </div>
+      <div class="custom-presets-list" id="customPresetsList"></div>
+      <div class="sample-disclaimer"><span>ⓘ</span> Presets included in Form Photo Fixer are configurable examples, not verified official requirements. Always check the application notice before submitting.</div>
+    </section>
+
+    <section class="about-strip" id="about"><div class="about-icon">✦</div><div><strong>Made for peace of mind.</strong><span>Private by design. Your images are processed only on your device and are never uploaded or stored by us.</span></div><div class="offline-pill"><span></span> Works offline after loading</div></section>
+  </main>
+  <footer><span>© 2025 FORM PHOTO FIXER</span><span>YOUR FILES STAY YOURS <span class="footer-dot">●</span></span></footer>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+</body>
+</html>
